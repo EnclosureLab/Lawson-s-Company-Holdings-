@@ -43,7 +43,7 @@ let grid="",labels="",candles="",dates="";
 for(let v=min;v<=max+step*.01;v+=step){const yy=y(v);grid+='<line x1="'+L+'" y1="'+yy+'" x2="'+(W-R)+'" y2="'+yy+'"/>';labels+='<text x="'+(W-5)+'" y="'+(yy+4)+'" text-anchor="end">'+money(v)+'</text>';}
 const labelEvery=Math.max(1,Math.ceil(n/12));
 for(let i=0;i<n;i++){const xx=x(i),d=data[i].date;grid+='<line x1="'+xx+'" y1="'+T+'" x2="'+xx+'" y2="'+(T+ph)+'" opacity=".25"/>';if(i%labelEvery===0||i===n-1){dates+='<text x="'+xx+'" y="'+(H-9)+'" text-anchor="'+(i===0?'start':i===n-1?'end':'middle')+'">'+d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"2-digit"})+'</text>';}}
-const cw=Math.max(3,Math.min(12,pw/data.length*1.04));
+const cw=Math.max(3,pw/data.length*0.98);
 data.forEach((d,i)=>{const xx=x(i),up=d.close>=d.open,top=y(Math.max(d.open,d.close)),bottom=y(Math.min(d.open,d.close));candles+='<line class="candle-wick '+(up?'candle-up':'candle-down')+'" x1="'+xx+'" y1="'+y(d.high)+'" x2="'+xx+'" y2="'+y(d.low)+'"/><rect class="'+(up?'candle-up':'candle-down')+'" x="'+(xx-cw/2)+'" y="'+top+'" width="'+cw+'" height="'+Math.max(2,bottom-top)+'"/>';});
 const last=data[data.length-1].close,priceY=y(last);
 grid+='<line x1="'+L+'" y1="'+priceY+'" x2="'+(W-R)+'" y2="'+priceY+'" stroke="#16b897" stroke-width="1.3" stroke-dasharray="4 4"/>';
