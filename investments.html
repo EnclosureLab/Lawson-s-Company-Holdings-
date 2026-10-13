@@ -35,9 +35,9 @@ const companies={all:{name:"Lawsons Company Holdings",value:600,allocation:"100%
 const startDate=new Date("2026-10-09T12:00:00");let zoom=1;let verticalView=null;const money=n=>"$"+Number(n).toLocaleString("en-US",{maximumFractionDigits:0});
 function drawChart(value){
 const W=900,H=340,L=12,R=72,T=12,B=34,pw=W-L-R,ph=H-T-B,today=new Date();today.setHours(12,0,0,0);
-const days=Math.max(1,Math.min(180,Math.floor((today-startDate)/86400000)+1));let close=value*.86,all=[];
-for(let i=0;i<days;i++){const date=new Date(startDate);date.setDate(date.getDate()+i);const open=close;close=Math.max(value*.55,Math.min(value*1.08,close+Math.sin(i*1.7)*value*.025+Math.cos(i*.47)*value*.012));all.push({date,open,close,high:Math.max(open,close)+Math.abs(Math.sin(i*2.1))*value*.025,low:Math.max(1,Math.min(open,close)-Math.abs(Math.cos(i*1.3))*value*.025)});}
-all[all.length-1].close=value;all[all.length-1].high=Math.max(all[all.length-1].high,value);all[all.length-1].low=Math.min(all[all.length-1].low,value);
+const endDays=Math.max(1,Math.min(180,Math.floor((today-startDate)/86400000)+1));const historyStart=new Date(startDate);historyStart.setDate(historyStart.getDate()-90);const days=endDays+90;let close=value*.52,all=[];
+for(let i=0;i<days;i++){const date=new Date(historyStart);date.setDate(date.getDate()+i);const target=value*(.52+.48*(i/90));const open=close;const trend=i<90?(target-close)*.22:Math.sin(i*1.7)*value*.012+Math.cos(i*.47)*value*.006;close=i<90?Math.max(value*.48,Math.min(value*1.02,close+trend+Math.sin(i*1.9)*value*.004)):Math.max(value*.55,Math.min(value*1.08,close+trend));const c={date,open,close,high:Math.max(open,close)+Math.abs(Math.sin(i*2.1))*value*.012,low:Math.max(1,Math.min(open,close)-Math.abs(Math.cos(i*1.3))*value*.012)};all.push(c);}
+const anchor=all[90];anchor.close=value;anchor.high=Math.max(anchor.high,value);anchor.low=Math.min(anchor.low,value);if(all.length>91){all[91].open=value;all[91].close=value*.99;}all[all.length-1].close=value;all[all.length-1].high=Math.max(all[all.length-1].high,value);all[all.length-1].low=Math.min(all[all.length-1].low,value);
 const n=Math.max(1,Math.min(all.length,Math.round(all.length/zoom))),endIndex=Math.max(n,Math.min(all.length,all.length-Math.round(viewOffset||0))),data=all.slice(endIndex-n,endIndex);
 const baseLo=Math.min(...data.map(d=>d.low)),baseHi=Math.max(...data.map(d=>d.high));
 const min=verticalView?verticalView.min:50,max=verticalView?verticalView.max:950;
