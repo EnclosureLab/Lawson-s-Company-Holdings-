@@ -234,7 +234,7 @@ renderPositions();document.getElementById("year").textContent=new Date().getFull
     try {
       if(kind==="signup"){
         const username=document.getElementById("lchUsername").value.trim();
-        const {data,error}=await client.auth.signUp({email,password,options:{data:{username},emailRedirectTo:location.origin+location.pathname}});
+        const {data,error}=await client.auth.signUp({email,password,options:{data:{username},emailRedirectTo:"https://enclosurelab.github.io/Lawson-s-Company-Holdings-/investments.html"}});
         if(error)throw error;
         if(data.session){currentUser=data.user;setAuthUi();await loadPortfolio();}
         else message("Account request submitted. If email confirmation is enabled, open the confirmation email, then return here and log in.");
