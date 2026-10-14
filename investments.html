@@ -268,7 +268,17 @@ renderPositions();document.getElementById("year").textContent=new Date().getFull
     try {
       const {data,error}=await client.rpc(type==="buy"?"buy_shares":"sell_shares",{p_company_key:companyKey,p_shares:qty});
       if(error)throw error;
-      await loadPortfolio();message((type==="buy"?"Virtual purchase":"Virtual sale")+" saved to your account.");
+      await loadPortfolio();
+      if(type==="sell"){
+        const refreshed=Array.isArray(portfolio?.holdings)?portfolio.holdings:[];
+        const remaining=refreshed.find(h=>(h.company_key||"")===companyKey||keyMap[document.getElementById("company").value]===(h.company_key||""));
+        if(remaining && Number(remaining.shares)>0){
+          message("The sale request completed, but your saved portfolio still shows "+fmt(remaining.shares)+" unit(s). The database sell function did not fully update the holding. No success message was shown.",true);
+          document.getElementById("orderStatus").textContent="Sale not confirmed: saved shares still appear. Please try again later.";
+          return;
+        }
+      }
+      message((type==="buy"?"Virtual purchase":"Virtual sale")+" saved to your account.");
       document.getElementById("orderStatus").textContent="Trade saved to your demo account.";
       document.querySelector('[data-paper-tab="positions"]').click();
     } catch(e){message(e.message||"Trade failed. Your saved balance was not changed.",true);document.getElementById("orderStatus").textContent=e.message||"Trade failed.";}
