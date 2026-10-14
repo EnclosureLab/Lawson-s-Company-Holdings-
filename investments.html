@@ -12,19 +12,19 @@
 <body>
 <header class="top"><a class="brand" href="index.html">LAWSONS COMPANY <span>HOLDINGS</span></a><nav class="toplinks"><a class="back" href="index.html">← Main website</a><a href="#market">Market overview</a><a href="#inquiry">Investment interest</a></nav></header>
 <main class="wrap">
-<div class="demo"><strong>DEMO DASHBOARD</strong> · All values and charts below are illustrative placeholders, not live company valuations, account balances, investment performance, or offers. No funds can be invested through this page.</div>
-<section class="head"><div><div class="eyebrow">Portfolio workspace</div><h1>Investment Dashboard</h1><p>Explore company profiles and track illustrative portfolio information.</p></div><span class="pill" id="selectedPill">Portfolio: All businesses</span></section>
+<div class="demo"><strong>VIRTUAL TRADING DEMO</strong> · Start with 10,000 simulated credits. Buy and sell virtual business units to practice. Credits have no cash value and cannot be withdrawn or redeemed.</div>
+<section class="head"><div><div class="eyebrow">Portfolio workspace</div><h1>Virtual Trading Dashboard</h1><p>Practice buying and selling simulated business units with demo credits.</p></div><span class="pill" id="selectedPill">Portfolio: All businesses</span></section>
 <div class="tabs" id="companyTabs" role="tablist"><button class="active" data-company="all" aria-selected="true">All businesses</button><button data-company="landscaping" aria-selected="false">Lawsons Landscaping</button><button data-company="onyx" aria-selected="false">Onyx Scents</button><button data-company="enclosure" aria-selected="false">Enclosure Lab</button></div>
 <section class="metrics" id="market">
 <div class="metric"><div class="label">Illustrative company value</div><div class="value" id="companyValue">—</div><div class="sub">Sample figure · not an appraisal</div></div>
 <div class="metric"><div class="label">Illustrative portfolio allocation</div><div class="value" id="allocation">100%</div><div class="sub">Demo allocation only</div></div>
 <div class="metric"><div class="label">Revenue status</div><div class="value">Not connected</div><div class="sub">No live financial feed</div></div>
-<div class="metric"><div class="label">Your investment balance</div><div class="value">Not connected</div><div class="sub">No investor accounts on this demo</div></div>
+<div class="metric"><div class="label">Demo credit wallet</div><div class="value" id="walletMetric">10,000 cr</div><div class="sub">Simulated credits only · no cash value</div></div>
 </section>
 <div class="layout">
 <section class="panel chartpanel"><div class="chartmain"><div class="panel-head"><div><h2 id="chartTitle">Daily candlestick chart</h2><div class="muted" style="font-size:12px;margin-top:3px">Illustrative historical candles</div></div><div class="periods"><label class="timeframe-label" for="candleTimeframe">Timeframe</label><select id="candleTimeframe" aria-label="Candlestick timeframe"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select><button type="button" id="zoomOut">−</button><button type="button" id="zoomIn">+</button><button type="button" id="resetZoom">Reset</button></div></div><svg class="chart" id="candleChart" viewBox="0 0 900 340" preserveAspectRatio="none" role="img" aria-label="Zoomable daily candlestick chart"><g id="chartGrid" class="chartgrid"></g><g id="candles"></g><g id="yLabels"></g><g id="xLabels"></g></svg><div class="chartbottom"><span id="dateRange">October 9, 2026</span><span class="muted desktop-chart-hint">Use + / − or scroll to zoom</span></div><div class="mobile-chart-controls" aria-label="Mobile chart controls"><div class="mobile-control-row"><button type="button" id="mobilePanLeft" aria-label="Pan chart left">← Older</button><button type="button" id="mobilePanRight" aria-label="Pan chart right">Newer →</button></div><div class="mobile-control-row"><button type="button" id="mobileZoomOut">− Zoom out</button><button type="button" id="mobileZoomIn">+ Zoom in</button><button type="button" id="mobileReset">Reset</button></div><label for="mobilePriceScale">Vertical scale</label><input id="mobilePriceScale" type="range" min="1" max="100" value="50"><div class="muted mobile-chart-hint">Use the buttons to move through time and zoom. Drag the vertical-scale slider to expand or compress prices.</div></div></div></section>
 <aside class="panel orderpanel" aria-label="Simulated order ticket">
-<div class="panel-head"><h2 id="orderSymbol">Enclosure Lab</h2><span class="muted" style="font-size:10px">PAPER</span></div>
+<div class="panel-head"><h2 id="orderSymbol">Enclosure Lab</h2><span class="muted" style="font-size:10px">SIMULATED CREDITS</span></div>
 <div class="side-tabs"><button type="button" class="sell" id="sellSide">Sell</button><button type="button" class="buy active" id="buySide">Buy</button></div>
 <div class="order-tabs"><button type="button" class="active" data-order-type="market">Market</button><button type="button" data-order-type="limit">Limit</button><button type="button" data-order-type="stop">Stop</button></div>
 <div id="limitPriceWrap" hidden><label for="limitPrice">Limit / stop price (USD)</label><input id="limitPrice" type="number" min="0.01" step="0.01" value="380"></div>
@@ -36,14 +36,14 @@
 </aside>
 <section class="panel paperdesk" aria-label="Paper trading account">
 <div class="panel-head"><h2>Trading Account</h2><span class="muted" style="font-size:11px">SIMULATED ACCOUNT</span></div>
-<div class="pill" style="display:inline-block">lawsons holdings · USD</div>
+<div class="pill" style="display:inline-block">lawsons holdings · DEMO CREDITS</div>
 <div class="paperstats">
-<div class="paperstat"><span>Account balance</span><strong id="paperBalance">$0.00</strong></div>
-<div class="paperstat"><span>Equity</span><strong id="paperEquity">$0.00</strong></div>
-<div class="paperstat"><span>Realized P&amp;L</span><strong class="positive" id="paperRealized">+$0.00</strong></div>
-<div class="paperstat"><span>Unrealized P&amp;L</span><strong id="paperUnrealized">$0.00</strong></div>
+<div class="paperstat"><span>Available credits</span><strong id="paperBalance">10,000 cr</strong></div>
+<div class="paperstat"><span>Account equity</span><strong id="paperEquity">10,000 cr</strong></div>
+<div class="paperstat"><span>Realized gain/loss</span><strong class="positive" id="paperRealized">0 cr</strong></div>
+<div class="paperstat"><span>Unrealized gain/loss</span><strong id="paperUnrealized">0 cr</strong></div>
 <div class="paperstat"><span>Account margin</span><strong>$0.00</strong></div>
-<div class="paperstat"><span>Available funds</span><strong id="paperAvailable">$0.00</strong></div>
+<div class="paperstat"><span>Available credits</span><strong id="paperAvailable">10,000 cr</strong></div>
 <div class="paperstat"><span>Orders margin</span><strong>$0.00</strong></div>
 <div class="paperstat"><span>Margin buffer</span><strong>100.00%</strong></div>
 </div>
@@ -62,7 +62,7 @@
 </main>
 <script>
 const companies={all:{name:"Lawsons Company Holdings",value:600,allocation:"100%",items:[["Lawsons Landscaping","Landscaping","$500"],["Onyx Scents","Fragrance retail & e-commerce","$25"],["Enclosure Lab","Custom car-audio enclosures","$380"]]},landscaping:{name:"Lawsons Landscaping",value:500,allocation:"—",items:[["Lawsons Landscaping","Landscaping","$500"]]},onyx:{name:"Onyx Scents",value:25,allocation:"—",items:[["Onyx Scents","Fragrance retail & e-commerce","$25"]]},enclosure:{name:"Enclosure Lab",value:380,allocation:"—",items:[["Enclosure Lab","Custom car-audio enclosures","$380"]]}};
-const startDate=new Date("2026-10-09T12:00:00");let zoom=1;let verticalView=null;let candleTimeframe="daily";const money=n=>"$"+Number(n).toLocaleString("en-US",{maximumFractionDigits:0});
+const startDate=new Date("2026-10-09T12:00:00");let zoom=1;let verticalView=null;let candleTimeframe="daily";const money=n=>"$"+Number(n).toLocaleString("en-US",{maximumFractionDigits:0});const creditMoney=n=>Number(n).toLocaleString("en-US",{maximumFractionDigits:2})+" cr";
 function drawChart(value){
 const W=900,H=340,L=12,R=72,T=12,B=34,pw=W-L-R,ph=H-T-B,today=new Date();today.setHours(12,0,0,0);
 const endDays=Math.max(1,Math.min(180,Math.floor((today-startDate)/86400000)+1));const historyStart=new Date(startDate);historyStart.setDate(historyStart.getDate()-90);const days=endDays+90;let close=value*.52,all=[];
@@ -92,8 +92,36 @@ document.getElementById("buySide").addEventListener("click",()=>{orderState.side
 document.getElementById("sellSide").addEventListener("click",()=>{orderState.side="sell";document.getElementById("sellSide").classList.add("active");document.getElementById("buySide").classList.remove("active");updateOrderPreview();});
 document.querySelectorAll("[data-order-type]").forEach(b=>b.addEventListener("click",()=>{orderState.type=b.dataset.orderType;document.querySelectorAll("[data-order-type]").forEach(x=>x.classList.toggle("active",x===b));updateOrderPreview();}));
 ["orderQuantity","limitPrice","leverage"].forEach(id=>document.getElementById(id).addEventListener("input",updateOrderPreview));
-const simulatedPositions=[];const simulatedOrders=[];function renderPositions(){const rows=simulatedPositions.map(p=>{const last=(companies[p.key]||companies.all).value,pnl=(last-p.price)*p.qty*(p.side==="sell"?-1:1);return "<tr><td>"+p.name+"</td><td>"+p.side.toUpperCase()+"</td><td>"+p.qty+"</td><td>"+money(p.price)+"</td><td>"+(p.takeProfit?money(p.takeProfit):"—")+"</td><td>"+(p.stopLoss?money(p.stopLoss):"—")+"</td><td>"+money(last)+"</td><td style=\"color:"+(pnl>=0?"#16b897":"#fa5968")+"\">"+money(pnl)+"</td><td>"+money(p.price*p.qty)+"</td></tr>";}).join("");document.getElementById("paperTableWrap").innerHTML='<table class="paper-table"><thead><tr><th>Symbol</th><th>Side</th><th>Quantity</th><th>Avg. fill price</th><th>Take profit</th><th>Stop loss</th><th>Last price</th><th>Unrealized P&amp;L</th><th>Trade value</th></tr></thead><tbody>'+(rows||'<tr><td class="paper-empty" colspan="9">There are no open positions in this paper-trading account yet.</td></tr>')+'</tbody></table>';document.getElementById("paperEquity").textContent=money(simulatedPositions.reduce((sum,p)=>sum+p.price*p.qty,0));document.getElementById("paperAvailable").textContent="$0.00";document.getElementById("paperBuyingPower").textContent="$0.00";document.getElementById("paperOpenPnl").textContent=money(simulatedPositions.reduce((sum,p)=>sum+((companies[p.key]||companies.all).value-p.price)*p.qty*(p.side==="sell"?-1:1),0));}
-document.getElementById("submitOrder").addEventListener("click",()=>{const key=document.getElementById("company").value,qty=Number(document.getElementById("orderQuantity").value),price=orderState.type==="market"?currentDemoPrice():Number(document.getElementById("limitPrice").value),c=companies[key]||companies.all;if(!(qty>0)||!(price>0)){document.getElementById("orderStatus").textContent="Enter a valid positive quantity and price.";return;}if(orderState.type!=="market"){document.getElementById("orderStatus").textContent="Simulated "+orderState.type.toUpperCase()+" order recorded in Orders. No real trade was placed.";simulatedOrders.push({name:c.name,side:orderState.side,qty,price,type:orderState.type,date:new Date().toLocaleString()});return;}if(orderState.side==="sell"){let remaining=qty;for(let i=simulatedPositions.length-1;i>=0&&remaining>0;i--){const p=simulatedPositions[i];if(p.key!==key||p.side!=="buy")continue;const sold=Math.min(p.qty,remaining);remaining-=sold;p.qty-=sold;if(p.qty<=0.0000001)simulatedPositions.splice(i,1);}if(remaining>0){document.getElementById("orderStatus").textContent="You only have "+(qty-remaining)+" share(s) of "+c.name+" available to sell. Buy shares first or lower the sell quantity.";return;}renderPositions();document.querySelectorAll("[data-paper-tab]").forEach(b=>{b.classList.toggle("active",b.dataset.paperTab==="positions");b.setAttribute("aria-selected",String(b.dataset.paperTab==="positions"));});document.getElementById("orderStatus").textContent="Simulated SELL of "+qty+" share(s) of "+c.name+" at "+money(price)+". Your position was reduced. No real trade was placed.";return;}simulatedPositions.push({key,name:c.name,side:"buy",qty,price,takeProfit:Number(document.getElementById("takeProfit").value)||0,stopLoss:Number(document.getElementById("stopLoss").value)||0});renderPositions();document.querySelectorAll("[data-paper-tab]").forEach(b=>{b.classList.toggle("active",b.dataset.paperTab==="positions");b.setAttribute("aria-selected",String(b.dataset.paperTab==="positions"));});document.getElementById("orderStatus").textContent="Simulated "+orderState.side.toUpperCase()+" "+qty+" share(s) of "+c.name+" at "+money(price)+". Added to Trading Account → Positions. No real trade was placed.";});
+let demoBalance=10000,realizedPnl=0;const simulatedPositions=[];const simulatedOrders=[];const completedTrades=[];
+function renderPositions(){
+ const rows=simulatedPositions.map(p=>{const last=(companies[p.key]||companies.all).value,pnl=(last-p.price)*p.qty;return "<tr><td>"+p.name+"</td><td>LONG</td><td>"+p.qty+"</td><td>"+creditMoney(p.price)+"</td><td>"+(p.takeProfit?creditMoney(p.takeProfit):"—")+"</td><td>"+(p.stopLoss?creditMoney(p.stopLoss):"—")+"</td><td>"+creditMoney(last)+"</td><td style=\"color:"+(pnl>=0?"#16b897":"#fa5968")+"\">"+creditMoney(pnl)+"</td><td>"+creditMoney(p.price*p.qty)+"</td></tr>";}).join("");
+ document.getElementById("paperTableWrap").innerHTML='<table class="paper-table"><thead><tr><th>Business</th><th>Side</th><th>Units</th><th>Buy price</th><th>Take profit</th><th>Stop loss</th><th>Current price</th><th>Unrealized gain/loss</th><th>Cost basis</th></tr></thead><tbody>'+(rows||'<tr><td class="paper-empty" colspan="9">No open positions yet. Choose a business and use Buy to get started.</td></tr>')+'</tbody></table>';
+ const unrealized=simulatedPositions.reduce((sum,p)=>sum+(((companies[p.key]||companies.all).value-p.price)*p.qty),0);
+ document.getElementById("paperBalance").textContent=creditMoney(demoBalance);document.getElementById("paperAvailable").textContent=creditMoney(demoBalance);document.getElementById("paperEquity").textContent=creditMoney(demoBalance+simulatedPositions.reduce((sum,p)=>sum+(companies[p.key]||companies.all).value*p.qty,0));document.getElementById("paperRealized").textContent=(realizedPnl>0?"+":"")+creditMoney(realizedPnl);document.getElementById("paperUnrealized").textContent=(unrealized>0?"+":"")+creditMoney(unrealized);
+ document.querySelectorAll("#walletMetric").forEach(el=>el.textContent=creditMoney(demoBalance));
+}
+function renderTradeHistory(){
+ const rows=completedTrades.map(t=>"<tr><td>"+t.date+"</td><td>"+t.name+"</td><td>"+t.qty+"</td><td>"+creditMoney(t.entry)+"</td><td>"+creditMoney(t.exit)+"</td><td>"+(t.pnl>0?"+":"")+creditMoney(t.pnl)+"</td></tr>").join("");
+ paperViews["trade-history"]='<table class="paper-table"><thead><tr><th>Date</th><th>Business</th><th>Units</th><th>Average buy</th><th>Sell price</th><th>Realized gain/loss</th></tr></thead><tbody>'+(rows||'<tr><td class="paper-empty" colspan="6">No completed trades yet.</td></tr>')+'</tbody></table>';
+ paperViews["activity"]='<table class="paper-table"><thead><tr><th>Time</th><th>Activity</th><th>Details</th></tr></thead><tbody>'+(completedTrades.map(t=>"<tr><td>"+t.date+"</td><td>Sold virtual units</td><td>"+t.qty+" "+t.name+" at "+creditMoney(t.exit)+"</td></tr>").join("")||'<tr><td class="paper-empty" colspan="3">Your activity will appear here.</td></tr>')+'</tbody></table>';
+}
+document.getElementById("submitOrder").addEventListener("click",()=>{
+ const key=document.getElementById("company").value,qty=Number(document.getElementById("orderQuantity").value),price=orderState.type==="market"?currentDemoPrice():Number(document.getElementById("limitPrice").value),c=companies[key]||companies.all, status=document.getElementById("orderStatus");
+ if(orderState.type!=="market"){status.textContent="Limit and stop orders are preview-only in this first version. Select Market to trade demo credits.";return;}
+ if(!(qty>0)||!(price>0)){status.textContent="Enter a valid positive quantity and price.";return;}
+ if(orderState.side==="buy"){
+  const cost=qty*price;if(cost>demoBalance){status.textContent="Not enough demo credits. Available: "+creditMoney(demoBalance)+". Lower the quantity.";return;}
+  demoBalance-=cost;simulatedPositions.push({key,name:c.name,qty,price,takeProfit:Number(document.getElementById("takeProfit").value)||0,stopLoss:Number(document.getElementById("stopLoss").value)||0});
+  status.textContent="Bought "+qty+" virtual unit(s) of "+c.name+" for "+creditMoney(cost)+". Remaining wallet: "+creditMoney(demoBalance)+".";
+ }else{
+  let remaining=qty,proceeds=0,costBasis=0,sold=0;
+  for(let i=simulatedPositions.length-1;i>=0&&remaining>0;i--){const p=simulatedPositions[i];if(p.key!==key)continue;const amount=Math.min(p.qty,remaining);remaining-=amount;sold+=amount;proceeds+=amount*price;costBasis+=amount*p.price;p.qty-=amount;if(p.qty<0.0000001)simulatedPositions.splice(i,1);}
+  if(remaining>0){status.textContent="You only own "+(qty-remaining)+" virtual unit(s) of "+c.name+". Reduce the sell quantity or buy units first.";return;}
+  const pnl=proceeds-costBasis;demoBalance+=proceeds;realizedPnl+=pnl;completedTrades.push({key,name:c.name,qty:sold,entry:sold?costBasis/sold:0,exit:price,pnl,date:new Date().toLocaleString()});renderTradeHistory();
+  status.textContent="Sold "+sold+" virtual unit(s) of "+c.name+" for "+creditMoney(proceeds)+". "+(pnl>=0?"Gain: ":"Loss: ")+creditMoney(Math.abs(pnl))+". Wallet: "+creditMoney(demoBalance)+".";
+ }
+ renderPositions();document.querySelectorAll("[data-paper-tab]").forEach(b=>{b.classList.toggle("active",b.dataset.paperTab==="positions");b.setAttribute("aria-selected",String(b.dataset.paperTab==="positions"));});document.querySelector('[data-paper-tab="positions"]').click();
+});
 document.querySelectorAll("[data-company]").forEach(btn=>btn.addEventListener("click",()=>render(btn.dataset.company)));
 document.getElementById("company").addEventListener("change",e=>{render(e.target.value);updateOrderPreview();});
 document.getElementById("candleTimeframe").addEventListener("change",e=>{candleTimeframe=e.target.value;viewOffset=0;zoom=1;verticalView=null;document.getElementById("chartTitle").textContent=({daily:"Daily",weekly:"Weekly",monthly:"Monthly"}[candleTimeframe])+" candlestick chart";drawChart(companies[document.getElementById("company").value].value)});
@@ -122,5 +150,5 @@ analytics:'<div class="paperstats"><div class="paperstat"><span>Closed trades</s
 };
 document.querySelectorAll("[data-paper-tab]").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll("[data-paper-tab]").forEach(b=>{const active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-selected",String(active));});document.getElementById("paperTableWrap").innerHTML=paperViews[btn.dataset.paperTab];}));
 document.getElementById("inquiryForm").addEventListener("submit",e=>{e.preventDefault();const c=companies[document.getElementById("company").value].name,amount=Number(document.getElementById("amount").value);document.getElementById("status").textContent="Inquiry preview: "+c+" · amount to discuss: "+money(amount)+". Nothing was sent or saved, and no investment was made."});
-document.getElementById("year").textContent=new Date().getFullYear();const params=new URLSearchParams(location.search);render(companies[params.get("company")]?params.get("company"):"all");updateOrderPreview();
+renderPositions();document.getElementById("year").textContent=new Date().getFullYear();const params=new URLSearchParams(location.search);render(companies[params.get("company")]?params.get("company"):"all");updateOrderPreview();
 </script></body></html>
