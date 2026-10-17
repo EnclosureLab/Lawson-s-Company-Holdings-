@@ -102,7 +102,7 @@ document.getElementById("dateRange").textContent=data[0].date.toLocaleDateString
 }
 function render(key){const c=companies[key]||companies.all;document.getElementById("selectedPill").textContent="Company: "+c.name;document.getElementById("companyValue").textContent=money(c.value);document.getElementById("allocation").textContent=c.allocation;document.getElementById("chartTitle").textContent=c.name+" · daily candles";document.getElementById("company").value=key;document.querySelectorAll("[data-company]").forEach(btn=>{const active=btn.dataset.company===key;btn.classList.toggle("active",active);btn.setAttribute("aria-selected",String(active));});document.getElementById("companyOverview").innerHTML=c.items.map(i=>'<div class="company-row"><div><strong><span class="company-dot"></span>'+i[0]+'</strong><small>'+i[1]+'</small></div><span class="muted" style="font-size:11px">'+i[2]+'</span></div>').join("");document.getElementById("watchlist").innerHTML=[["Lawsons Company Holdings","Parent company",companies.all.value],["Lawsons Landscaping","Landscaping",companies.landscaping.value],["Onyx Scents","Fragrance retail & e-commerce",companies.onyx.value],["Enclosure Lab","Custom car-audio enclosures",companies.enclosure.value]].map(i=>'<tr><td>'+i[0]+'</td><td>'+i[1]+'</td><td>'+money(i[2])+'</td><td>Owner-provided value</td></tr>').join("");zoom=1;verticalView=null;drawChart(c.value);}
 const orderState={side:"buy",type:"market"};
-function currentDemoPrice(){const key=document.getElementById("company").value;return (companies[key]||companies.all).value*0.20;}
+function currentDemoPrice(){const key=document.querySelector("#companyTabs [data-company].active")?.dataset.company||"all";return (companies[key]||companies.all).value*0.20;}
 function updateOrderPreview(){const price=currentDemoPrice(),qty=Math.max(0,Number(document.getElementById("orderQuantity").value)||0),shown=price;document.getElementById("orderSymbol").textContent=(companies[document.getElementById("company").value]||companies.all).name;document.getElementById("limitPriceWrap").hidden=true;document.getElementById("estimatePrice").textContent=money(shown);document.getElementById("orderValue").textContent=money(shown*qty);document.getElementById("orderMargin").textContent=money(shown*qty);document.getElementById("submitOrder").textContent=(orderState.side==="buy"?"Buy ":"Sell ")+(companies[document.getElementById("company").value]||companies.all).name;document.getElementById("submitOrder").classList.toggle("sell",orderState.side==="sell");}
 document.getElementById("buySide").addEventListener("click",()=>{orderState.side="buy";document.getElementById("buySide").classList.add("active");document.getElementById("sellSide").classList.remove("active");updateOrderPreview();});
 document.getElementById("sellSide").addEventListener("click",()=>{orderState.side="sell";document.getElementById("sellSide").classList.add("active");document.getElementById("buySide").classList.remove("active");updateOrderPreview();});
@@ -122,7 +122,7 @@ function renderTradeHistory(){
  paperViews["activity"]='<table class="paper-table"><thead><tr><th>Time</th><th>Activity</th><th>Details</th></tr></thead><tbody>'+(completedTrades.map(t=>"<tr><td>"+t.date+"</td><td>Sold virtual units</td><td>"+t.qty+" "+t.name+" at "+creditMoney(t.exit)+"</td></tr>").join("")||'<tr><td class="paper-empty" colspan="3">Your activity will appear here.</td></tr>')+'</tbody></table>';
 }
 document.getElementById("submitOrder").addEventListener("click",()=>{
- const key=document.getElementById("company").value,qty=Number(document.getElementById("orderQuantity").value),price=orderState.type==="market"?currentDemoPrice():Number(document.getElementById("limitPrice").value),c=companies[key]||companies.all, status=document.getElementById("orderStatus");
+ const key=document.querySelector("#companyTabs [data-company].active")?.dataset.company||"all",qty=Number(document.getElementById("orderQuantity").value),price=currentDemoPrice(),c=companies[key]||companies.all, status=document.getElementById("orderStatus");
  if(orderState.type!=="market"){status.textContent="Limit and stop orders are preview-only in this first version. Select Market to trade demo credits.";return;}
  if(!(qty>0)||!(price>0)){status.textContent="Enter a valid positive quantity and price.";return;}
  if(orderState.side==="buy"){
@@ -138,8 +138,8 @@ document.getElementById("submitOrder").addEventListener("click",()=>{
  }
  renderPositions();document.querySelectorAll("[data-paper-tab]").forEach(b=>{b.classList.toggle("active",b.dataset.paperTab==="positions");b.setAttribute("aria-selected",String(b.dataset.paperTab==="positions"));});document.querySelector('[data-paper-tab="positions"]').click();
 });
-document.querySelectorAll("[data-company]").forEach(btn=>btn.addEventListener("click",()=>render(btn.dataset.company)));
-document.getElementById("company").addEventListener("change",e=>{render(e.target.value);updateOrderPreview();});
+document.querySelectorAll("[data-company]").forEach(btn=>btn.addEventListener("click",()=>{render(btn.dataset.company);updateOrderPreview();}));
+document.getElementById("company").addEventListener("change",e=>{document.querySelectorAll("#companyTabs [data-company]").forEach(b=>{const active=b.dataset.company===e.target.value;b.classList.toggle("active",active);b.setAttribute("aria-selected",String(active));});render(e.target.value);updateOrderPreview();});
 document.getElementById("candleTimeframe").addEventListener("change",e=>{candleTimeframe=e.target.value;viewOffset=0;zoom=1;verticalView=null;document.getElementById("chartTitle").textContent=({daily:"Daily",weekly:"Weekly",monthly:"Monthly"}[candleTimeframe])+" candlestick chart";drawChart(companies[document.getElementById("company").value].value)});
 document.getElementById("zoomIn").addEventListener("click",()=>{zoom=Math.min(36,zoom*1.5);drawChart(companies[document.getElementById("company").value].value)});
 document.getElementById("zoomOut").addEventListener("click",()=>{zoom=Math.max(1,zoom/1.5);drawChart(companies[document.getElementById("company").value].value)});
@@ -184,8 +184,8 @@ renderPositions();document.getElementById("year").textContent=new Date().getFull
   let client = null, currentUser = null, portfolio = null, busy = false;
   function message(text, isError=false) { statusEl.textContent=text; statusEl.style.color=isError?"#fa5968":"var(--muted)"; }
   function fmt(n) { return Number(n||0).toLocaleString("en-US",{maximumFractionDigits:2}); }
-  function selectedKey() { return keyMap[document.getElementById("company").value]||""; }
-  function selectedName() { const k=document.getElementById("company").value; return ({landscaping:"Lawsons Landscaping",onyx:"Onyx Scents",enclosure:"Enclosure Lab"})[k]||k; }
+  function selectedKey() { return ({landscaping:"landscaping",onyx:"onyx",enclosure:"enclosure"})[document.querySelector("#companyTabs [data-company].active")?.dataset.company]||""; }
+  function selectedName() { const k=document.querySelector("#companyTabs [data-company].active")?.dataset.company||"all"; return ({all:"Lawsons Company Holdings",landscaping:"Lawsons Landscaping",onyx:"Onyx Scents",enclosure:"Enclosure Lab"})[k]||k; }
   function setAuthUi() {
     const logged=!!currentUser;
     stateEl.textContent=logged?("Signed in: "+(currentUser.email||"account")):"Not signed in";
