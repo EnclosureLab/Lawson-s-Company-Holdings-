@@ -284,6 +284,10 @@ renderPositions();document.getElementById("year").textContent=new Date().getFull
     } catch(e){message(e.message||"Trade failed. Your saved balance was not changed.",true);document.getElementById("orderStatus").textContent=e.message||"Trade failed.";}
     finally{busy=false;tradeBtn.textContent=(type==="buy"?"Buy ":"Sell ")+selectedName();setAuthUi();updateOrderPreview();}
   },true);
+  // Render the chart immediately on page load, preserving a company selected in the URL.
+  const requestedCompany=new URLSearchParams(window.location.search).get("company");
+  render(companies[requestedCompany]?requestedCompany:"all");
+  updateOrderPreview();
   async function init() {
     if(!window.supabase||!window.supabase.createClient){message("Supabase client failed to load. Check your connection and refresh.",true);return;}
     client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
