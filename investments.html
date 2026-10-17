@@ -158,9 +158,10 @@ document.getElementById("submitOrder").addEventListener("click",()=>{
   demoBalance-=cost;simulatedPositions.push({key,name:c.name,qty,price,takeProfit:0,stopLoss:0});const now=new Date().toLocaleString();orderHistory.push({date:now,name:c.name,side:"Buy",type:"Market",qty,price,status:"Filled"});activityLog.push({date:now,action:"Bought shares",details:qty+" shares of "+c.name+" at "+creditMoney(price)});balanceHistory.push({date:now,start:demoBalance+cost,change:-cost,end:demoBalance,source:"Buy "+c.name});
   status.textContent="Bought "+qty+" virtual unit(s) of "+c.name+" for "+creditMoney(cost)+". Remaining wallet: "+creditMoney(demoBalance)+".";
  }else{
+  const owned=simulatedPositions.filter(p=>p.key===key).reduce((sum,p)=>sum+p.qty,0);
+  if(qty>owned+0.0000001){status.textContent="You own "+owned+" share(s) of "+c.name+". You cannot sell more shares than you own.";return;}
   let remaining=qty,proceeds=0,costBasis=0,sold=0;
   for(let i=simulatedPositions.length-1;i>=0&&remaining>0;i--){const p=simulatedPositions[i];if(p.key!==key)continue;const amount=Math.min(p.qty,remaining);remaining-=amount;sold+=amount;proceeds+=amount*price;costBasis+=amount*p.price;p.qty-=amount;if(p.qty<0.0000001)simulatedPositions.splice(i,1);}
-  if(remaining>0){status.textContent="You only own "+(qty-remaining)+" virtual unit(s) of "+c.name+". Reduce the sell quantity or buy units first.";return;}
   const pnl=proceeds-costBasis;const now=new Date().toLocaleString(),oldBalance=demoBalance;demoBalance+=proceeds;realizedPnl+=pnl;completedTrades.push({key,name:c.name,qty:sold,entry:sold?costBasis/sold:0,exit:price,pnl,date:now});orderHistory.push({date:now,name:c.name,side:"Sell",type:"Market",qty:sold,price,status:"Filled"});activityLog.push({date:now,action:"Sold shares",details:sold+" shares of "+c.name+" at "+creditMoney(price)+"; realized P/L "+creditMoney(pnl)});balanceHistory.push({date:now,start:oldBalance,change:proceeds,end:demoBalance,source:"Sell "+c.name});renderTradeHistory();
   status.textContent="Sold "+sold+" virtual unit(s) of "+c.name+" for "+creditMoney(proceeds)+". "+(pnl>=0?"Gain: ":"Loss: ")+creditMoney(Math.abs(pnl))+". Wallet: "+creditMoney(demoBalance)+".";
  }
