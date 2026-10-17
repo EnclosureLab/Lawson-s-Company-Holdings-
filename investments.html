@@ -145,7 +145,18 @@ document.getElementById("submitOrder").addEventListener("click",()=>{
  }
  renderPositions();document.querySelectorAll("[data-paper-tab]").forEach(b=>{b.classList.toggle("active",b.dataset.paperTab==="positions");b.setAttribute("aria-selected",String(b.dataset.paperTab==="positions"));});document.querySelector('[data-paper-tab="positions"]').click();
 });
-document.querySelectorAll("[data-company]").forEach(btn=>btn.addEventListener("click",()=>{render(btn.dataset.company);updateOrderPreview();}));
+function syncOrderCompany(key){
+ const company=companies[key]||companies.all;
+ document.getElementById("company").value=key;
+ document.getElementById("orderSymbol").textContent=company.name;
+ document.getElementById("submitOrder").textContent=(orderState.side==="buy"?"Buy ":"Sell ")+company.name;
+ document.getElementById("companyValue").textContent=money(company.value);
+ document.getElementById("selectedPill").textContent="Company: "+company.name;
+ updateOrderPreview();
+}
+document.querySelectorAll("#companyTabs [data-company]").forEach(btn=>btn.addEventListener("click",()=>{render(btn.dataset.company);syncOrderCompany(btn.dataset.company);}));
+document.getElementById("buySide").addEventListener("click",()=>syncOrderCompany(document.querySelector("#companyTabs [data-company].active")?.dataset.company||"all"),true);
+document.getElementById("sellSide").addEventListener("click",()=>syncOrderCompany(document.querySelector("#companyTabs [data-company].active")?.dataset.company||"all"),true);
 document.getElementById("company").addEventListener("change",e=>{document.querySelectorAll("#companyTabs [data-company]").forEach(b=>{const active=b.dataset.company===e.target.value;b.classList.toggle("active",active);b.setAttribute("aria-selected",String(active));});render(e.target.value);updateOrderPreview();});
 document.getElementById("candleTimeframe").addEventListener("change",e=>{candleTimeframe=e.target.value;viewOffset=0;zoom=1;verticalView=null;document.getElementById("chartTitle").textContent=({daily:"Daily",weekly:"Weekly",monthly:"Monthly"}[candleTimeframe])+" candlestick chart";drawChart(companies[document.getElementById("company").value].value)});
 document.getElementById("zoomIn").addEventListener("click",()=>{zoom=Math.min(36,zoom*1.5);drawChart(companies[document.getElementById("company").value].value)});
