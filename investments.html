@@ -209,7 +209,7 @@ renderPositions();document.getElementById("year").textContent=new Date().getFull
     const active=holdings.filter(h=>Number(h.shares)>0);
     const rows=active.map(h=>{
       const name=String(h.name||h.company_name||h.company_key||"Business"),qty=Number(h.shares||0),avg=Number(h.average_cost||0),price=Number(h.market_price||0);
-      const pnl=Number(h.unrealized_gain_loss ?? qty*(price-avg)),basis=Number(h.cost_basis ?? qty*avg);
+      const pnl=qty*(price-avg),basis=qty*avg;
       return '<tr><td>'+escapeHtml(name)+'</td><td>LONG</td><td>'+fmt(qty)+'</td><td>'+fmt(avg)+' cr</td><td>—</td><td>—</td><td>'+fmt(price)+' cr</td><td style="color:'+(pnl>=0?'#16b897':'#fa5968')+'">'+(pnl>0?'+':'')+fmt(pnl)+' cr</td><td>'+fmt(basis)+' cr</td></tr>';
     }).join("");
     document.getElementById("paperTableWrap").innerHTML='<table class="paper-table"><thead><tr><th>Business</th><th>Side</th><th>Units</th><th>Buy price</th><th>Take profit</th><th>Stop loss</th><th>Current price</th><th>Unrealized gain/loss</th><th>Cost basis</th></tr></thead><tbody>'+(rows||'<tr><td class="paper-empty" colspan="9">No saved holdings yet. Choose a business and buy virtual units.</td></tr>')+'</tbody></table>';
@@ -217,7 +217,7 @@ renderPositions();document.getElementById("year").textContent=new Date().getFull
     const txRows=tx.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.created_at).toLocaleString():"—")+'</td><td>'+escapeHtml(t.company_name||t.name||t.company_key||"Business")+'</td><td>'+escapeHtml(t.transaction_type||"—")+'</td><td>'+fmt(t.shares)+'</td><td>'+fmt(t.price_per_share)+' cr</td><td>'+fmt(t.total)+' cr</td></tr>').join("");
     paperViews["order-history"]='<table class="paper-table"><thead><tr><th>Date</th><th>Business</th><th>Side</th><th>Units</th><th>Price per unit</th><th>Total</th></tr></thead><tbody>'+(txRows||'<tr><td class="paper-empty" colspan="6">No saved transactions yet.</td></tr>')+'</tbody></table>';
     document.getElementById("paperRealized").textContent="—";
-    document.getElementById("paperUnrealized").textContent=fmt(active.reduce((sum,h)=>sum+Number(h.unrealized_gain_loss ?? Number(h.shares||0)*(Number(h.market_price||0)-Number(h.average_cost||0))),0))+" cr";
+    document.getElementById("paperUnrealized").textContent=fmt(active.reduce((sum,h)=>sum+Number(h.shares||0)*(Number(h.market_price||0)-Number(h.average_cost||0)),0))+" cr";
   }
   async function loadPortfolio() {
     if(!client||!currentUser)return;
