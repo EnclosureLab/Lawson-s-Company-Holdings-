@@ -51,7 +51,7 @@ html{scroll-behavior:smooth}body{background:#131722;color:#d1d4dc;font-family:-a
 <div class="side-tabs"><button type="button" class="sell" id="sellSide">Sell</button><button type="button" class="buy active" id="buySide">Buy</button></div>
 <div class="order-tabs"><button type="button" class="active" data-order-type="market">Market</button><button type="button" disabled title="Pending orders require database support not yet configured">Limit · unavailable</button><button type="button" disabled title="Pending orders require database support not yet configured">Stop · unavailable</button></div>
 <div id="limitPriceWrap" hidden><label for="limitPrice">Limit / stop price (USD)</label><input id="limitPrice" type="number" min="0.01" step="0.01" value="380"></div>
-<label for="orderQuantity">Quantity (units)</label><input id="orderQuantity" type="number" min="0.01" step="0.01" value="1">
+<label for="orderQuantity">Shares</label><input id="orderQuantity" type="number" min="0.01" step="0.01" value="1">
 <div class="muted" style="font-size:12px;margin-top:10px">Cash-only demo · borrowing and leverage are disabled.</div>
 <div class="muted" style="font-size:12px;margin-top:10px">Market orders execute immediately at the demo quote. Limit/stop and conditional exit orders are not enabled.</div>
 <div class="order-summary"><div class="summaryrow"><span>Estimated price</span><strong id="estimatePrice">$380.00</strong></div><div class="summaryrow"><span>Order value</span><strong id="orderValue">$380.00</strong></div><div class="summaryrow"><span>Estimated cash required</span><strong id="orderMargin">$380.00</strong></div></div>
