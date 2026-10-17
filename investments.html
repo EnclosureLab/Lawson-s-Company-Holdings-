@@ -148,6 +148,10 @@ function mobilePan(direction){const totalDays=Math.max(1,Math.floor((new Date().
 document.getElementById("mobilePanLeft").addEventListener("click",()=>mobilePan(1));document.getElementById("mobilePanRight").addEventListener("click",()=>mobilePan(-1));document.getElementById("mobileZoomIn").addEventListener("click",()=>{zoom=Math.min(36,zoom*1.5);drawChart(companies[document.getElementById("company").value].value)});document.getElementById("mobileZoomOut").addEventListener("click",()=>{zoom=Math.max(1,zoom/1.5);drawChart(companies[document.getElementById("company").value].value)});document.getElementById("mobileReset").addEventListener("click",()=>{zoom=1;viewOffset=0;verticalView=null;document.getElementById("mobilePriceScale").value=50;drawChart(companies[document.getElementById("company").value].value)});document.getElementById("mobilePriceScale").addEventListener("input",e=>{const t=Number(e.target.value)/100,range=2000*Math.pow(20/2000,t);const center=verticalView?(verticalView.min+verticalView.max)/2:companies[document.getElementById("company").value].value;verticalView={min:Math.max(0,center-range/2),max:center+range/2};drawChart(companies[document.getElementById("company").value].value)});
 const chart=document.getElementById("candleChart");
 let verticalDrag=null,panDrag=null,suppressSelectUntil=0,viewOffset=0;
+// Initialize the chart only after viewOffset and other chart state are initialized.
+const requestedCompany=new URLSearchParams(window.location.search).get("company");
+render(companies[requestedCompany]?requestedCompany:"all");
+updateOrderPreview();
 chart.style.cursor="grab";chart.style.userSelect="none";chart.style.webkitUserSelect="none";chart.style.touchAction="none";
 chart.addEventListener("pointerdown",e=>{if(e.button!==0)return;const box=chart.getBoundingClientRect();e.preventDefault();suppressSelectUntil=Date.now()+1000;chart.style.cursor="grabbing";if(e.clientX>box.right-box.width*.11){verticalDrag={y:e.clientY,range:verticalView?verticalView.max-verticalView.min:900,center:verticalView?(verticalView.max+verticalView.min)/2:500};}else{panDrag={x:e.clientX,y:e.clientY,offset:viewOffset,width:box.width,height:box.height,priceView:verticalView?{...verticalView}:null};}try{chart.setPointerCapture(e.pointerId);}catch(_){}});
 chart.addEventListener("pointermove",e=>{if(verticalDrag){e.preventDefault();const box=chart.getBoundingClientRect(),delta=(e.clientY-verticalDrag.y)/Math.max(1,box.height),range=Math.max(20,Math.min(2000,verticalDrag.range*Math.exp(delta*.45))),center=verticalDrag.center;verticalView={min:Math.max(0,center-range/2),max:center+range/2};suppressSelectUntil=Date.now()+1000;drawChart(companies[document.getElementById("company").value].value);}else if(panDrag){e.preventDefault();const dx=e.clientX-panDrag.x,dy=e.clientY-panDrag.y;const dayPixels=chart.clientWidth/Math.max(1,Math.round((Math.floor((new Date().setHours(12,0,0,0)-startDate)/86400000)+1)/zoom));viewOffset=Math.max(0,Math.min(180,panDrag.offset+Math.round(dx/Math.max(1,dayPixels)*(dx<0?15:5))));const original=panDrag.priceView||{min:50,max:950},range=original.max-original.min,shift=dy/Math.max(1,panDrag.height)*range*1.4;verticalView={min:Math.max(0,original.min+shift),max:Math.max(20,original.max+shift)};drawChart(companies[document.getElementById("company").value].value);suppressSelectUntil=Date.now()+1000;}});
@@ -284,10 +288,6 @@ renderPositions();document.getElementById("year").textContent=new Date().getFull
     } catch(e){message(e.message||"Trade failed. Your saved balance was not changed.",true);document.getElementById("orderStatus").textContent=e.message||"Trade failed.";}
     finally{busy=false;tradeBtn.textContent=(type==="buy"?"Buy ":"Sell ")+selectedName();setAuthUi();updateOrderPreview();}
   },true);
-  // Render the chart immediately on page load, preserving a company selected in the URL.
-  const requestedCompany=new URLSearchParams(window.location.search).get("company");
-  render(companies[requestedCompany]?requestedCompany:"all");
-  updateOrderPreview();
   async function init() {
     if(!window.supabase||!window.supabase.createClient){message("Supabase client failed to load. Check your connection and refresh.",true);return;}
     client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
