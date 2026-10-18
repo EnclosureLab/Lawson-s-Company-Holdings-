@@ -484,4 +484,54 @@ document.addEventListener("click",function(event){
  }
 },true);
 </script>
+<script id="order-submit-reliability-fix">
+/* Capture the submit action before stale handlers; execute one deterministic simulated market order. */
+document.addEventListener("click",function(event){
+ const button=event.target.closest("#submitOrder");
+ if(!button)return;
+ event.preventDefault();
+ event.stopImmediatePropagation();
+ const status=document.getElementById("orderStatus");
+ const say=message=>{if(status)status.textContent=message;};
+ try{
+  const key=typeof selectedCompanyKey!=="undefined"?selectedCompanyKey:(document.getElementById("company")?.value||"all");
+  const company=companies[key]||companies.all;
+  const qty=Number(document.getElementById("orderQuantity")?.value);
+  const price=Number(currentDemoPrice());
+  const side=orderState.side;
+  if(!Number.isFinite(qty)||qty<=0){say("Enter a shares quantity greater than zero.");return;}
+  if(!Number.isFinite(price)||price<=0){say("The selected company does not have a valid simulated quote.");return;}
+  const now=new Date().toLocaleString();
+  if(side==="buy"){
+   const cost=qty*price;
+   if(cost>demoBalance){say("Not enough demo credits. Available: "+creditMoney(demoBalance)+". Reduce the share quantity.");return;}
+   const old=demoBalance;demoBalance-=cost;
+   simulatedPositions.push({key,name:company.name,qty,price,takeProfit:0,stopLoss:0});
+   orderHistory.push({date:now,key,name:company.name,side:"Buy",type:"Market",qty,price,status:"Filled"});
+   activityLog.push({date:now,action:"Bought shares",details:qty+" shares of "+company.name+" at "+creditMoney(price)});
+   balanceHistory.push({date:now,start:old,change:-cost,end:demoBalance,source:"Buy "+company.name});
+   say("Bought "+qty+" share(s) of "+company.name+" at "+creditMoney(price)+". Cost: "+creditMoney(cost)+". Available credits: "+creditMoney(demoBalance)+".");
+  }else{
+   const owned=simulatedPositions.filter(p=>p.key===key).reduce((sum,p)=>sum+Number(p.qty),0);
+   if(qty>owned+1e-8){say("You own "+owned+" share(s) of "+company.name+". You cannot sell more than you own.");return;}
+   let remaining=qty,proceeds=0,basis=0,sold=0;
+   for(let i=simulatedPositions.length-1;i>=0&&remaining>1e-8;i--){
+    const p=simulatedPositions[i];if(p.key!==key)continue;
+    const n=Math.min(remaining,p.qty);remaining-=n;sold+=n;proceeds+=n*price;basis+=n*p.price;p.qty-=n;
+    if(p.qty<1e-8)simulatedPositions.splice(i,1);
+   }
+   const pnl=proceeds-basis,old=demoBalance;demoBalance+=proceeds;realizedPnl+=pnl;
+   completedTrades.push({key,name:company.name,qty:sold,entry:sold?basis/sold:0,exit:price,pnl,date:now});
+   orderHistory.push({date:now,key,name:company.name,side:"Sell",type:"Market",qty:sold,price,status:"Filled"});
+   activityLog.push({date:now,action:"Sold shares",details:sold+" shares of "+company.name+" at "+creditMoney(price)+"; realized P/L "+creditMoney(pnl)});
+   balanceHistory.push({date:now,start:old,change:proceeds,end:demoBalance,source:"Sell "+company.name});
+   say("Sold "+sold+" share(s) of "+company.name+" at "+creditMoney(price)+". Proceeds: "+creditMoney(proceeds)+". Realized P/L: "+creditMoney(pnl)+". Available credits: "+creditMoney(demoBalance)+".");
+  }
+  renderPositions();renderTradeHistory();renderAccountTab("positions");
+  document.querySelectorAll("[data-paper-tab]").forEach(b=>{const active=b.dataset.paperTab==="positions";b.classList.toggle("active",active);b.setAttribute("aria-selected",String(active));});
+  updateOrderPreview();
+  document.querySelectorAll("#walletMetric").forEach(el=>el.textContent=creditMoney(demoBalance));
+ }catch(error){console.error("Order submit failed",error);say("Order failed: "+(error?.message||"unexpected dashboard error")+". Refresh and try again.");}
+},true);
+</script>
 </body></html>
