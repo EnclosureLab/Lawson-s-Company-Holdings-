@@ -97,6 +97,66 @@ html{scroll-behavior:smooth}body{background:#0b0c0f;color:var(--text);font-famil
   .market-watchlist #marketWatchRows{grid-template-columns:1fr 1fr}
   .market-watchlist .watch-detail{display:block}
 }
+
+/* Final visual pass: compact dark trading workstation */
+body{background:#0b0e13;color:#d1d4dc}
+.top{height:54px;background:#131722;border-bottom-color:#2a2e39;padding-inline:18px}
+.brand{font-size:12px;letter-spacing:1.2px}
+.wrap{max-width:1800px;padding:14px 16px}
+.head{margin-bottom:12px;align-items:center}
+.head h1{font-size:22px}
+.head p{font-size:12px}
+.demo{margin-bottom:12px;background:#211d13;border-color:#51452a}
+.metrics{gap:8px}
+.metric,.panel{background:#131722;border-color:#2a2e39;border-radius:5px;box-shadow:none}
+.metric{padding:12px 14px}
+.metric .value{font-size:20px}
+.layout{margin-top:10px;gap:8px;grid-template-columns:205px minmax(0,1fr) 285px;grid-template-areas:"watch chart order" "account account account"}
+.market-watchlist,.orderpanel,.chartpanel{padding:11px}
+.market-watchlist{font-size:12px}
+.market-watchlist .watch-head{padding-bottom:10px;border-bottom:1px solid #2a2e39;margin-bottom:0}
+.market-watchlist .watch-columns{padding:8px 5px;border-bottom-color:#2a2e39}
+.market-watchlist #marketWatchRows{gap:2px}
+.market-watchlist #marketWatchRows>*{min-width:0}
+.market-watchlist .watch-detail{border-top-color:#2a2e39}
+.chartpanel .panel-head{margin-bottom:4px}
+.chartpanel h2{font-size:14px;font-weight:600}
+.tv-chart{height:clamp(400px,58vh,680px);background:#131722}
+#tvToolbar{background:#131722;border-color:#2a2e39;position:relative}
+#tvToolbar button{font-size:11px;padding:5px 7px}
+#tvLegend{border-bottom-color:#2a2e39}
+.orderpanel{background:#131722}
+.orderpanel .order-tabs,.orderpanel .side-tabs{background:#0b0e13;border:1px solid #2a2e39}
+.orderpanel input,.orderpanel select{background:#0b0e13;border-color:#363b48}
+.orderpanel .order-summary{background:#0b0e13;border:1px solid #2a2e39}
+.paperdesk{background:#131722}
+.paperstats{gap:12px}
+.paperstat strong{font-variant-numeric:tabular-nums}
+.paper-table th,.paper-table td{border-bottom-color:#2a2e39}
+@media(max-width:1200px){
+ .layout{grid-template-columns:185px minmax(0,1fr) 260px;gap:7px}
+ .market-watchlist,.orderpanel,.chartpanel{padding:9px}
+ .tv-chart{height:clamp(360px,52vh,560px)}
+}
+@media(max-width:900px){
+ .layout{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"chart" "order" "watch" "account"}
+ .tv-chart{height:430px}
+ .market-watchlist #marketWatchRows{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:600px){
+ .wrap{padding:8px}
+ .top{height:48px;padding-inline:9px}
+ .brand{font-size:10px;letter-spacing:.7px}
+ .head h1{font-size:18px}
+ .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .metric{padding:10px}
+ .metric .value{font-size:17px}
+ .layout{gap:8px}
+ .tv-chart{height:350px}
+ #tvToolbar{overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start}
+ #tvToolbar button{white-space:nowrap;flex-shrink:0}
+ .market-watchlist #marketWatchRows{grid-template-columns:1fr}
+}
 </style></head>
 <body>
 <header class="top"><a class="brand" href="index.html"><span class="brand-mark">L</span><span class="brand-name">LAWSONS <b>COMPANY HOLDINGS</b></span></a><nav class="toplinks"><a href="#market">Markets</a><a href="#watchlist">Watchlist</a><a href="#trading-account">Trading panel</a><a class="back" href="index.html">← Main website</a></nav></header>
