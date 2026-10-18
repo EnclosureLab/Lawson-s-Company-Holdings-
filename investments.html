@@ -248,7 +248,7 @@ activity:'<table class="paper-table"><thead><tr><th>Time</th><th>Activity</th><t
 'trade-history':'<table class="paper-table"><thead><tr><th>Date</th><th>Symbol</th><th>Side</th><th>Quantity</th><th>Entry price</th><th>Exit price</th><th>Realized P&amp;L</th></tr></thead><tbody><tr><td class="paper-empty" colspan="7">No completed trades yet.</td></tr></tbody></table>',
 analytics:'<div class="paperstats"><div class="paperstat"><span>Closed trades</span><strong>0</strong></div><div class="paperstat"><span>Win rate</span><strong>—</strong></div><div class="paperstat"><span>Net P&amp;L</span><strong>$0.00</strong></div><div class="paperstat"><span>Open positions</span><strong>0</strong></div></div><p class="notice">Analytics will populate when simulated trades are recorded. No trading activity has been generated.</p>'
 };
-document.querySelectorAll("[data-paper-tab]").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll("[data-paper-tab]").forEach(b=>{const active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-selected",String(active));});if(btn.dataset.paperTab==="positions"){renderPositions();}else{document.getElementById("paperTableWrap").innerHTML=paperViews[btn.dataset.paperTab];}}));
+// Legacy paperViews handler removed; renderAccountTab handles every account tab.
 document.getElementById("inquiryForm").addEventListener("submit",e=>{e.preventDefault();const c=companies[document.getElementById("company").value].name,amount=Number(document.getElementById("amount").value);document.getElementById("status").textContent="Inquiry preview: "+c+" · amount to discuss: "+money(amount)+". Nothing was sent or saved, and no investment was made."});
 renderPositions();document.getElementById("year").textContent=new Date().getFullYear();const params=new URLSearchParams(location.search);render(companies[params.get("company")]?params.get("company"):"all");updateOrderPreview();
 </script>
@@ -277,8 +277,8 @@ renderPositions();document.getElementById("year").textContent=new Date().getFull
     document.querySelector('label[for="lchUsername"]').hidden=logged;
     document.getElementById("lchEmail").disabled=logged; document.getElementById("lchPassword").disabled=logged;
     signInBtn.hidden=logged; signUpBtn.hidden=logged; signOutBtn.hidden=!logged;
-    tradeBtn.disabled=!logged||busy; tradeBtn.style.opacity=(!logged||busy)?".55":"1";
-    tradeBtn.title=logged?"":"Log in to trade and save your demo portfolio";
+    tradeBtn.disabled=busy; tradeBtn.style.opacity=busy?".55":"1";
+    tradeBtn.title=logged?"Trade and save to your account":"Trade in this browser demo; sign in to save across devices";
   }
   function setCredits(n) {
     const value=Number(n||0);
@@ -340,7 +340,7 @@ renderPositions();document.getElementById("year").textContent=new Date().getFull
   document.addEventListener("click",async e=>{
     if(e.target!==tradeBtn&&!tradeBtn.contains(e.target))return;
     e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-    if(!currentUser||!client){message("Log in before placing a virtual trade.",true);return;}
+    if(!currentUser||!client){message("Using the local simulated account. Sign in if you want to save trades to your account.");return;}
     if(busy)return;
     const companyKey=selectedKey(),qty=Number(document.getElementById("orderQuantity").value);
     if(!companyKey){message("Select one business to trade. The all-businesses view cannot be traded directly.",true);return;}
