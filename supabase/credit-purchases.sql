@@ -28,8 +28,8 @@ declare
   inserted_count integer;
 begin
   if p_package_code = 'starter' then expected_credits := 500; expected_amount := 499;
-  elsif p_package_code = 'trader' then expected_credits := 1200; expected_amount := 999;
-  elsif p_package_code = 'pro' then expected_credits := 2600; expected_amount := 1999;
+  elsif p_package_code = 'trader' then expected_credits := 900; expected_amount := 999;
+  elsif p_package_code = 'pro' then expected_credits := 2000; expected_amount := 1999;
   else raise exception 'Invalid package';
   end if;
   if p_credits <> expected_credits or p_amount_cents <> expected_amount then
