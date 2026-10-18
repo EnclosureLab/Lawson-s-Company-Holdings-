@@ -180,7 +180,7 @@ document.getElementById("submitOrder").addEventListener("click",()=>{
  const status=document.getElementById("orderStatus");
  try {
 
- const key=selectedCompanyKey,qty=Number(document.getElementById("orderQuantity").value),price=currentDemoPrice(),c=companies[key]||companies.all, status=document.getElementById("orderStatus");
+ const key=selectedCompanyKey,qty=Number(document.getElementById("orderQuantity").value),price=currentDemoPrice(),c=companies[key]||companies.all;
  if(orderState.type!=="market"){
   const trigger=Number(document.getElementById("limitPrice").value);
   if(!(trigger>0)){status.textContent="Enter a valid limit/stop trigger price.";return;}
