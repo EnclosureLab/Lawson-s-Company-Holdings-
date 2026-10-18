@@ -232,7 +232,7 @@ document.getElementById("submitOrder").addEventListener("click",()=>{
    pending.status="Filled";pending.price=fillPrice;orderHistory.push(pending);activityLog.push({date:pending.date,action:pending.side+" order filled",details:qty+" shares of "+c.name+" at "+creditMoney(fillPrice)});
    status.textContent=pending.side+" "+qty+" shares of "+c.name+" filled at "+creditMoney(fillPrice)+".";
   }else{simulatedOrders.push(pending);activityLog.push({date:pending.date,action:"Order placed",details:pending.side+" "+pending.type+" for "+qty+" shares of "+c.name+" at "+creditMoney(trigger)});status.textContent="Pending "+pending.type+" "+pending.side+" order placed for "+qty+" shares of "+c.name+" at "+creditMoney(trigger)+".";}
-  renderPositions();renderTradeHistory();renderAccountTab("positions");document.querySelectorAll("[data-paper-tab]").forEach(b=>{b.classList.toggle("active",b.dataset.paperTab==="positions");b.setAttribute("aria-selected",String(b.dataset.paperTab==="positions"));});return;
+  saveDemoAccount();renderPositions();renderTradeHistory();renderAccountTab("positions");document.querySelectorAll("[data-paper-tab]").forEach(b=>{b.classList.toggle("active",b.dataset.paperTab==="positions");b.setAttribute("aria-selected",String(b.dataset.paperTab==="positions"));});return;
 }
  if(!(qty>0)||!(price>0)){status.textContent="Enter a valid positive quantity and price.";return;}
  if(orderState.side==="buy"){
@@ -247,7 +247,7 @@ document.getElementById("submitOrder").addEventListener("click",()=>{
   const pnl=proceeds-costBasis;const now=new Date().toLocaleString(),oldBalance=demoBalance;demoBalance+=proceeds;realizedPnl+=pnl;completedTrades.push({key,name:c.name,qty:sold,entry:sold?costBasis/sold:0,exit:price,pnl,date:now});orderHistory.push({date:now,name:c.name,side:"Sell",type:"Market",qty:sold,price,status:"Filled"});activityLog.push({date:now,action:"Sold shares",details:sold+" shares of "+c.name+" at "+creditMoney(price)+"; realized P/L "+creditMoney(pnl)});balanceHistory.push({date:now,start:oldBalance,change:proceeds,end:demoBalance,source:"Sell "+c.name});renderTradeHistory();
   status.textContent="Sold "+sold+" virtual unit(s) of "+c.name+" for "+creditMoney(proceeds)+". "+(pnl>=0?"Gain: ":"Loss: ")+creditMoney(Math.abs(pnl))+". Wallet: "+creditMoney(demoBalance)+".";
  }
- renderPositions();renderTradeHistory();renderAccountTab("positions");document.querySelectorAll("[data-paper-tab]").forEach(b=>{b.classList.toggle("active",b.dataset.paperTab==="positions");b.setAttribute("aria-selected",String(b.dataset.paperTab==="positions"));});
+ saveDemoAccount();renderPositions();renderTradeHistory();renderAccountTab("positions");document.querySelectorAll("[data-paper-tab]").forEach(b=>{b.classList.toggle("active",b.dataset.paperTab==="positions");b.setAttribute("aria-selected",String(b.dataset.paperTab==="positions"));});
  } catch(error) { console.error("Simulated order failed:",error); status.textContent="Order failed: "+(error&&error.message?error.message:"unexpected dashboard error")+". Refresh and try again."; }
 });
 function syncOrderCompany(key){
