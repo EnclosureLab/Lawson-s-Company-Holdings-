@@ -8,8 +8,8 @@ const corsHeaders = {
 };
 const PACKAGES = {
   starter: { credits: 500, amount: 499, name: "Starter pack — 500 credits" },
-  trader: { credits: 900, amount: 999, name: "Trader pack — 900 credits" },
-  pro: { credits: 2000, amount: 1999, name: "Pro pack — 2,000 credits" },
+  trader: { credits: 1200, amount: 999, name: "Trader pack — 1,200 credits" },
+  pro: { credits: 2600, amount: 1999, name: "Pro pack — 2,600 credits" },
 } as const;
 
 Deno.serve(async (req) => {
