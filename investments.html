@@ -172,11 +172,14 @@ document.querySelectorAll("[data-paper-tab]").forEach(btn=>btn.addEventListener(
  renderAccountTab(btn.dataset.paperTab);
 }));
 function renderTradeHistory(){
- const rows=completedTrades.map(t=>"<tr><td>"+t.date+"</td><td>"+t.name+"</td><td>"+t.qty+"</td><td>"+creditMoney(t.entry)+"</td><td>"+creditMoney(t.exit)+"</td><td>"+(t.pnl>0?"+":"")+creditMoney(t.pnl)+"</td></tr>").join("");
- paperViews["trade-history"]='<table class="paper-table"><thead><tr><th>Date</th><th>Business</th><th>Units</th><th>Average buy</th><th>Sell price</th><th>Realized gain/loss</th></tr></thead><tbody>'+(rows||'<tr><td class="paper-empty" colspan="6">No completed trades yet.</td></tr>')+'</tbody></table>';
- paperViews["activity"]='<table class="paper-table"><thead><tr><th>Time</th><th>Activity</th><th>Details</th></tr></thead><tbody>'+(completedTrades.map(t=>"<tr><td>"+t.date+"</td><td>Sold virtual units</td><td>"+t.qty+" "+t.name+" at "+creditMoney(t.exit)+"</td></tr>").join("")||'<tr><td class="paper-empty" colspan="3">Your activity will appear here.</td></tr>')+'</tbody></table>';
+ // Account tables are rendered from the live simulated account arrays by renderAccountTab.
+ // Do not write into the old paperViews object, which is not defined in this page.
 }
+
 document.getElementById("submitOrder").addEventListener("click",()=>{
+ const status=document.getElementById("orderStatus");
+ try {
+
  const key=selectedCompanyKey,qty=Number(document.getElementById("orderQuantity").value),price=currentDemoPrice(),c=companies[key]||companies.all, status=document.getElementById("orderStatus");
  if(orderState.type!=="market"){
   const trigger=Number(document.getElementById("limitPrice").value);
@@ -206,6 +209,7 @@ document.getElementById("submitOrder").addEventListener("click",()=>{
   status.textContent="Sold "+sold+" virtual unit(s) of "+c.name+" for "+creditMoney(proceeds)+". "+(pnl>=0?"Gain: ":"Loss: ")+creditMoney(Math.abs(pnl))+". Wallet: "+creditMoney(demoBalance)+".";
  }
  renderPositions();renderTradeHistory();renderAccountTab("positions");document.querySelectorAll("[data-paper-tab]").forEach(b=>{b.classList.toggle("active",b.dataset.paperTab==="positions");b.setAttribute("aria-selected",String(b.dataset.paperTab==="positions"));});
+ } catch(error) { console.error("Simulated order failed:",error); status.textContent="Order failed: "+(error&&error.message?error.message:"unexpected dashboard error")+". Refresh and try again."; }
 });
 function syncOrderCompany(key){
  selectedCompanyKey=companies[key]?key:"all";key=selectedCompanyKey;const company=companies[key]||companies.all;
