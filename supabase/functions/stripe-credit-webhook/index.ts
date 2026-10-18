@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
   const userId = session.metadata?.user_id;
   const packageCode = session.metadata?.package_code;
   const credits = Number(session.metadata?.credits);
-  const expected = { starter: { credits: 500, amount: 499 }, trader: { credits: 900, amount: 999 }, pro: { credits: 2000, amount: 1999 } } as const;
+  const expected = { starter: { credits: 500, amount: 499 }, trader: { credits: 1200, amount: 999 }, pro: { credits: 2600, amount: 1999 } } as const;
   if (!userId || !packageCode || !Object.hasOwn(expected, packageCode)) return new Response("Missing or invalid checkout metadata", { status: 400 });
   const pack = expected[packageCode as keyof typeof expected];
   if (credits !== pack.credits || session.amount_total !== pack.amount || session.currency !== "usd" || session.mode !== "payment") {
