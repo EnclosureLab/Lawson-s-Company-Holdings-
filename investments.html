@@ -461,4 +461,47 @@ renderPositions();document.getElementById("year").textContent=new Date().getFull
 </script><style id="company-tab-underline-fix">#companyTabs button[data-company]{position:relative!important;border-bottom:0!important;box-shadow:none!important}#companyTabs button[data-company]::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:transparent;border-radius:0 0 4px 4px;pointer-events:none}#companyTabs button[data-company].active::after,#companyTabs button[data-company][aria-selected="true"]::after{background:#2962ff!important}#companyTabs button[data-company]:focus-visible{outline:1px solid #2962ff;outline-offset:2px}</style><script id="company-tab-state-fix">(()=>{const tabs=[...document.querySelectorAll("#companyTabs button[data-company]")];tabs.forEach(btn=>btn.addEventListener("click",()=>{tabs.forEach(tab=>{const active=tab===btn;tab.classList.toggle("active",active);tab.setAttribute("aria-selected",String(active));});},true));})();</script>
 
 
+<script id="selected-company-order-sync">
+(function(){
+ function activeKey(){
+  const tab=document.querySelector("#companyTabs [data-company].active[aria-selected='true'],#companyTabs [data-company].active");
+  const key=tab?.dataset.company;
+  return key&&companies[key]?key:(document.getElementById("company")?.value&&companies[document.getElementById("company").value]?document.getElementById("company").value:"all");
+ }
+ function syncEverything(key){
+  if(!companies[key])key="all";
+  selectedCompanyKey=key;
+  const selector=document.getElementById("company");
+  if(selector)selector.value=key;
+  document.querySelectorAll("#companyTabs [data-company]").forEach(tab=>{
+   const active=tab.dataset.company===key;
+   tab.classList.toggle("active",active);
+   tab.setAttribute("aria-selected",String(active));
+  });
+  const company=companies[key];
+  const title=document.querySelector(".order-title h2,.order-head h2,#orderSymbol")||document.getElementById("orderSymbol");
+  if(title)title.textContent=company.name;
+  const symbol=document.getElementById("orderSymbol");if(symbol)symbol.textContent=company.name;
+  const submit=document.getElementById("submitOrder");
+  if(submit)submit.textContent=(orderState.side==="buy"?"Buy ":"Sell ")+company.name;
+  const pill=document.getElementById("selectedPill");if(pill)pill.textContent="Company: "+company.name;
+  const value=document.getElementById("companyValue");if(value)value.textContent=money(company.value);
+  const chartTitle=document.getElementById("chartTitle");if(chartTitle)chartTitle.textContent=company.name+" · daily candles";
+  if(typeof drawChart==="function")drawChart(company.value);
+  if(typeof updateOrderPreview==="function")updateOrderPreview();
+ }
+ document.addEventListener("click",function(event){
+  const tab=event.target.closest("#companyTabs [data-company]");
+  if(tab){syncEverything(tab.dataset.company);return;}
+  const submit=event.target.closest("#submitOrder");
+  if(submit){syncEverything(activeKey());}
+  const side=event.target.closest("#buySide,#sellSide");
+  if(side){syncEverything(activeKey());}
+ },true);
+ const selector=document.getElementById("company");
+ if(selector)selector.addEventListener("change",event=>syncEverything(event.target.value),true);
+ document.addEventListener("DOMContentLoaded",()=>syncEverything(activeKey()));
+ syncEverything(activeKey());
+})();
+</script>
 </body></html>
