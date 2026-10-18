@@ -376,43 +376,14 @@ renderPositions();document.getElementById("year").textContent=new Date().getFull
     document.getElementById("paperTableWrap").innerHTML='<p class="paper-empty">Log in to view your saved holdings.</p>';
     message("Logged out. Your saved portfolio remains in your account.");
   });
-  document.addEventListener("click",async e=>{
-    if(e.target!==tradeBtn&&!tradeBtn.contains(e.target))return;
-    if(!currentUser||!client){return;}
-    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-    if(busy)return;
-    const companyKey=selectedKey(),qty=Number(document.getElementById("orderQuantity").value);
-    if(!companyKey){message("Select one business to trade. The all-businesses view cannot be traded directly.",true);return;}
-    if(!(qty>0)||!Number.isFinite(qty)){message("Enter a valid positive quantity.",true);return;}
-    const type=document.querySelector(".side-tabs button.active")?.classList.contains("sell")?"sell":"buy";
-    const orderType=document.querySelector(".order-tabs button.active")?.textContent?.trim().toLowerCase()||"market";
-    if(orderType!=="market"){message("Only market orders are enabled for saved demo trading. Select Market.",true);return;}
-    busy=true;setAuthUi();tradeBtn.textContent=type==="buy"?"Processing virtual buy…":"Processing virtual sale…";
-    try {
-      const {data,error}=await client.rpc(type==="buy"?"buy_shares":"sell_shares",{p_company_key:companyKey,p_shares:qty});
-      if(error)throw error;
-      await loadPortfolio();
-      if(type==="sell"){
-        const refreshed=Array.isArray(portfolio?.holdings)?portfolio.holdings:[];
-        const remaining=refreshed.find(h=>(h.company_key||"")===companyKey||keyMap[document.getElementById("company").value]===(h.company_key||""));
-        if(remaining && Number(remaining.shares)>0){
-          message("The sale request completed, but your saved portfolio still shows "+fmt(remaining.shares)+" unit(s). The database sell function did not fully update the holding. No success message was shown.",true);
-          document.getElementById("orderStatus").textContent="Sale not confirmed: saved shares still appear. Please try again later.";
-          return;
-        }
-      }
-      message((type==="buy"?"Virtual purchase":"Virtual sale")+" saved to your account.");
-      document.getElementById("orderStatus").textContent="Trade saved to your demo account.";
-      document.querySelector('[data-paper-tab="positions"]').click();
-    } catch(e){message(e.message||"Trade failed. Your saved balance was not changed.",true);document.getElementById("orderStatus").textContent=e.message||"Trade failed.";}
-    finally{busy=false;tradeBtn.textContent=(type==="buy"?"Buy ":"Sell ")+selectedName();setAuthUi();updateOrderPreview();}
-  },true);
+  // The original simulated order engine above owns order execution. This account
+  // listener must not intercept the submit button or swallow the simulated trade.
   async function init() {
     if(!window.supabase||!window.supabase.createClient){message("Supabase client failed to load. Check your connection and refresh.",true);return;}
     client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
     const {data,error}=await client.auth.getSession();if(error)message(error.message,true);
     currentUser=data?.session?.user||null;setAuthUi();
-    if(currentUser)await loadPortfolio();else{setCredits(0);message("Create an account or log in to load your saved virtual portfolio.");}
+    if(currentUser)await loadPortfolio();else{message("Demo trading is ready. Sign in is optional; demo trades stay in this browser.");}
     client.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user||null;setAuthUi();if(currentUser)setTimeout(()=>loadPortfolio(),0);});
   }
   setAuthUi();init();
