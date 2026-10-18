@@ -63,6 +63,40 @@ html{scroll-behavior:smooth}body{background:#0b0c0f;color:var(--text);font-famil
 #watchlistTableSection{display:none}#inquiry,#inquiry+section{display:none}
 @media(max-width:1100px){.layout{grid-template-columns:minmax(0,1fr) 260px}.market-watchlist{grid-column:1/-1;grid-row:2}.market-watchlist #marketWatchRows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.market-watchlist .watch-detail{display:none}.paperdesk{grid-column:1/-1!important;grid-row:3}.chartpanel{grid-column:1;grid-row:1}.orderpanel{grid-column:2;grid-row:1}}
 @media(max-width:720px){.wrap{padding:8px}.top{padding:0 9px}.toplinks{display:none}.auth-panel .auth-grid{grid-template-columns:1fr 1fr}.head{gap:8px}.head h1{font-size:16px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{display:flex;flex-direction:column}.chartpanel,.orderpanel,.market-watchlist,.paperdesk{width:100%}.chart{height:340px}.tv-chart{height:340px}.market-watchlist #marketWatchRows{grid-template-columns:1fr 1fr}.paperstats{grid-template-columns:repeat(2,minmax(0,1fr))}.papertabs{overflow-x:auto;flex-wrap:nowrap}.papertabs button{white-space:nowrap}.orderpanel{position:static}}
+
+/* Trading-terminal layout inspired by the latest reference recording */
+.layout{
+  display:grid;
+  grid-template-columns:220px minmax(0,1fr) 300px;
+  grid-template-areas:"watch chart order" "account account account";
+  gap:12px;
+  align-items:start;
+}
+.chartpanel{grid-area:chart;min-width:0}
+.orderpanel{grid-area:order;position:sticky;top:78px;min-width:0}
+.market-watchlist{grid-area:watch;min-width:0;position:sticky;top:78px}
+.paperdesk{grid-area:account;min-width:0}
+.market-watchlist .watch-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.market-watchlist .watch-columns{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;padding:8px 5px;color:var(--muted);font-size:10px;text-transform:uppercase;border-bottom:1px solid var(--line)}
+.market-watchlist #marketWatchRows{display:grid;grid-template-columns:1fr}
+.market-watchlist .watch-detail{border-top:1px solid var(--line);margin-top:14px;padding-top:14px}
+@media(max-width:1100px){
+  .layout{grid-template-columns:180px minmax(0,1fr) 270px;grid-template-areas:"watch chart order" "account account account";gap:9px}
+  .market-watchlist #marketWatchRows{grid-template-columns:1fr}
+  .market-watchlist .watch-detail{display:block}
+}
+@media(max-width:900px){
+  .layout{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"chart" "order" "watch" "account"}
+  .chartpanel,.orderpanel,.market-watchlist,.paperdesk{width:100%;grid-column:auto;grid-row:auto}
+  .orderpanel,.market-watchlist{position:static}
+  .market-watchlist #marketWatchRows{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .market-watchlist .watch-detail{display:block}
+}
+@media(max-width:720px){
+  .layout{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"chart" "order" "watch" "account";gap:10px}
+  .market-watchlist #marketWatchRows{grid-template-columns:1fr 1fr}
+  .market-watchlist .watch-detail{display:block}
+}
 </style></head>
 <body>
 <header class="top"><a class="brand" href="index.html"><span class="brand-mark">L</span><span class="brand-name">LAWSONS <b>COMPANY HOLDINGS</b></span></a><nav class="toplinks"><a href="#market">Markets</a><a href="#watchlist">Watchlist</a><a href="#trading-account">Trading panel</a><a class="back" href="index.html">← Main website</a></nav></header>
