@@ -328,19 +328,45 @@ renderPositions();document.getElementById("year").textContent=new Date().getFull
   function escapeHtml(value) { return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
   function renderSavedPortfolio(data) {
     portfolio=data||{}; setCredits(portfolio.credits);
-    const holdings=Array.isArray(portfolio.holdings)?portfolio.holdings:[];
-    const active=holdings.filter(h=>Number(h.shares)>0);
+    const cloudHoldings=Array.isArray(portfolio.holdings)?portfolio.holdings:[];
+    // Combine account-backed holdings with locally persisted demo trades so that
+    // a successful Buy is immediately visible in Positions even when signed in.
+    const localHoldings=(typeof simulatedPositions!=="undefined"?simulatedPositions:[]).map(p=>({
+      company_key:p.key,name:p.name,shares:Number(p.qty)||0,average_cost:Number(p.price)||0,
+      market_price:Number(((companies[p.key]||companies.all).value)*0.20)||0,
+      take_profit:Number(p.takeProfit)||0,stop_loss:Number(p.stopLoss)||0,source:"demo"
+    }));
+    const byKey=new Map();
+    cloudHoldings.filter(h=>Number(h.shares)>0).forEach(h=>byKey.set(String(h.company_key||h.company_name||h.name),h));
+    localHoldings.filter(h=>h.shares>0).forEach(h=>{
+      const key=String(h.company_key||h.name),existing=byKey.get(key);
+      if(existing){
+        const oldShares=Number(existing.shares)||0,oldCost=Number(existing.average_cost)||0,total=oldShares+h.shares;
+        existing.average_cost=total?((oldShares*oldCost)+(h.shares*h.average_cost))/total:h.average_cost;
+        existing.shares=total;existing.market_price=h.market_price;
+      }else byKey.set(key,h);
+    });
+    const active=[...byKey.values()].filter(h=>Number(h.shares)>0);
     const rows=active.map(h=>{
-      const name=String(h.name||h.company_name||h.company_key||"Business"),qty=Number(h.shares||0),avg=Number(h.average_cost||0),price=Number(h.market_price||0);
+      const name=String(h.name||h.company_name||h.company_key||"Business"),qty=Number(h.shares)||0,avg=Number(h.average_cost)||0;
+      const key=String(h.company_key||"");
+      const matching=typeof companies!=="undefined"?(Object.entries(companies).find(([k,v])=>k===key||v.name===name)||[])[1]:null;
+      const price=matching?Number(matching.value)*0.20:Number(h.market_price)||0;
       const pnl=qty*(price-avg),basis=qty*avg;
-      return '<tr><td>'+escapeHtml(name)+'</td><td>LONG</td><td>'+fmt(qty)+'</td><td>'+fmt(avg)+' cr</td><td>—</td><td>—</td><td>'+fmt(price)+' cr</td><td style="color:'+(pnl>=0?'#16b897':'#fa5968')+'">'+(pnl>0?'+':'')+fmt(pnl)+' cr</td><td>'+fmt(basis)+' cr</td></tr>';
+      return '<tr><td>'+escapeHtml(name)+'</td><td>LONG</td><td>'+fmt(qty)+'</td><td>'+fmt(avg)+' cr</td><td>'+(Number(h.take_profit)>0?fmt(h.take_profit)+' cr':'—')+'</td><td>'+(Number(h.stop_loss)>0?fmt(h.stop_loss)+' cr':'—')+'</td><td>'+fmt(price)+' cr</td><td style="color:'+(pnl>=0?'#16b897':'#fa5968')+'">'+(pnl>0?'+':'')+fmt(pnl)+' cr</td><td>'+fmt(basis)+' cr</td></tr>';
     }).join("");
-    document.getElementById("paperTableWrap").innerHTML='<table class="paper-table"><thead><tr><th>Business</th><th>Side</th><th>Units</th><th>Buy price</th><th>Take profit</th><th>Stop loss</th><th>Current price</th><th>Unrealized gain/loss</th><th>Cost basis</th></tr></thead><tbody>'+(rows||'<tr><td class="paper-empty" colspan="9">No saved holdings yet. Choose a business and buy virtual units.</td></tr>')+'</tbody></table>';
+    document.getElementById("paperTableWrap").innerHTML='<table class="paper-table"><thead><tr><th>Business</th><th>Side</th><th>Shares</th><th>Buy price</th><th>Take profit</th><th>Stop loss</th><th>Current price</th><th>Unrealized gain/loss</th><th>Cost basis</th></tr></thead><tbody>'+(rows||'<tr><td class="paper-empty" colspan="9">No open holdings yet. Select a company and buy virtual shares to see your position here.</td></tr>')+'</tbody></table>';
     const tx=Array.isArray(portfolio.transactions)?portfolio.transactions:[];
-    const txRows=tx.map(t=>'<tr><td>'+escapeHtml(t.created_at?new Date(t.created_at).toLocaleString():"—")+'</td><td>'+escapeHtml(t.company_name||t.name||t.company_key||"Business")+'</td><td>'+escapeHtml(t.transaction_type||"—")+'</td><td>'+fmt(t.shares)+'</td><td>'+fmt(t.price_per_share)+' cr</td><td>'+fmt(t.total)+' cr</td></tr>').join("");
-    paperViews["order-history"]='<table class="paper-table"><thead><tr><th>Date</th><th>Business</th><th>Side</th><th>Units</th><th>Price per unit</th><th>Total</th></tr></thead><tbody>'+(txRows||'<tr><td class="paper-empty" colspan="6">No saved transactions yet.</td></tr>')+'</tbody></table>';
-    document.getElementById("paperRealized").textContent="—";
-    document.getElementById("paperUnrealized").textContent=fmt(active.reduce((sum,h)=>sum+Number(h.shares||0)*(Number(h.market_price||0)-Number(h.average_cost||0)),0))+" cr";
+    const localTx=typeof orderHistory!=="undefined"?orderHistory:[];
+    const txRows=[...tx.map(t=>({date:t.created_at?new Date(t.created_at).toLocaleString():"—",name:t.company_name||t.name||t.company_key||"Business",side:t.transaction_type||"—",shares:t.shares,price:t.price_per_share,total:t.total})),...localTx.map(t=>({date:t.date,name:t.name,side:t.side,shares:t.qty,price:t.price,total:(Number(t.qty)||0)*(Number(t.price)||0)}))].map(t=>'<tr><td>'+escapeHtml(t.date)+'</td><td>'+escapeHtml(t.name)+'</td><td>'+escapeHtml(t.side)+'</td><td>'+fmt(t.shares)+'</td><td>'+fmt(t.price)+' cr</td><td>'+fmt(t.total)+' cr</td></tr>').join("");
+    paperViews["order-history"]='<table class="paper-table"><thead><tr><th>Date</th><th>Business</th><th>Side</th><th>Shares</th><th>Price per share</th><th>Total</th></tr></thead><tbody>'+(txRows||'<tr><td class="paper-empty" colspan="6">No transactions yet.</td></tr>')+'</tbody></table>';
+    document.getElementById("paperRealized").textContent=typeof realizedPnl!=="undefined"?creditMoney(realizedPnl):"—";
+    document.getElementById("paperUnrealized").textContent=fmt(active.reduce((sum,h)=>{
+      const name=String(h.name||h.company_name||h.company_key||"Business"),key=String(h.company_key||"");
+      const matching=typeof companies!=="undefined"?(Object.entries(companies).find(([k,v])=>k===key||v.name===name)||[])[1]:null;
+      const price=matching?Number(matching.value)*0.20:Number(h.market_price)||0;
+      return sum+(Number(h.shares)||0)*(price-(Number(h.average_cost)||0));
+    },0))+" cr";
   }
   async function loadPortfolio() {
     if(!client||!currentUser)return;
