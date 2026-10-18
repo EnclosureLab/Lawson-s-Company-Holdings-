@@ -442,4 +442,46 @@ renderPositions();document.getElementById("year").textContent=new Date().getFull
  render("all");
 })();
 </script><style id="company-tab-underline-fix">#companyTabs button[data-company]{position:relative!important;border-bottom:0!important;box-shadow:none!important}#companyTabs button[data-company]::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:transparent;border-radius:0 0 4px 4px;pointer-events:none}#companyTabs button[data-company].active::after,#companyTabs button[data-company][aria-selected="true"]::after{background:#2962ff!important}#companyTabs button[data-company]:focus-visible{outline:1px solid #2962ff;outline-offset:2px}</style><script id="company-tab-state-fix">(()=>{const tabs=[...document.querySelectorAll("#companyTabs button[data-company]")];tabs.forEach(btn=>btn.addEventListener("click",()=>{tabs.forEach(tab=>{const active=tab===btn;tab.classList.toggle("active",active);tab.setAttribute("aria-selected",String(active));});},true));})();</script>
+<script id="reliable-trading-controls">
+/* Delegated click handling keeps the order-side and account-section controls responsive. */
+document.addEventListener("click",function(event){
+ const side=event.target.closest("#buySide,#sellSide");
+ if(side){
+  event.preventDefault();
+  const nextSide=side.id==="buySide"?"buy":"sell";
+  try{
+   if(typeof setOrderSide==="function") setOrderSide(nextSide);
+   else {
+    document.getElementById("buySide").classList.toggle("active",nextSide==="buy");
+    document.getElementById("sellSide").classList.toggle("active",nextSide==="sell");
+    const submit=document.getElementById("submitOrder");
+    if(submit) submit.textContent=(nextSide==="buy"?"Buy ":"Sell ")+(document.getElementById("orderSymbol")?.textContent||"selected company");
+   }
+   const selected=document.querySelector("#companyTabs [data-company].active")?.dataset.company;
+   if(selected && typeof syncOrderCompany==="function") syncOrderCompany(selected);
+   const status=document.getElementById("orderStatus");
+   if(status) status.textContent=nextSide==="buy"?"Buy selected. Choose shares and submit the order.":"Sell selected. Choose shares you own and submit the order.";
+  }catch(error){console.error("Order-side control error",error);}
+  return;
+ }
+ const tab=event.target.closest("[data-paper-tab]");
+ if(tab){
+  event.preventDefault();
+  const tabName=tab.dataset.paperTab;
+  document.querySelectorAll("[data-paper-tab]").forEach(button=>{
+   const active=button===tab;
+   button.classList.toggle("active",active);
+   button.setAttribute("aria-selected",String(active));
+  });
+  try{
+   if(typeof renderAccountTab==="function") renderAccountTab(tabName);
+   else document.getElementById("paperTableWrap").innerHTML='<p class="paper-empty">Trading account view is loading. Refresh the page and try again.</p>';
+  }catch(error){
+   console.error("Account tab render error",error);
+   const wrap=document.getElementById("paperTableWrap");
+   if(wrap) wrap.innerHTML='<p class="paper-empty">This account section could not load. Please refresh and try again.</p>';
+  }
+ }
+},true);
+</script>
 </body></html>
