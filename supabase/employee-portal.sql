@@ -126,5 +126,33 @@ with check (employee_id = auth.uid());
 revoke update on public.employee_tasks from authenticated;
 grant update (status, notes, updated_at) on public.employee_tasks to authenticated;
 
+-- Explicitly allow authenticated clients to call the manager-check helper.
+grant execute on function public.is_approved_manager() to authenticated;
+
+-- Backfill any Auth users whose profile is missing; ordinary accounts remain pending.
+insert into public.employee_profiles (user_id, display_name, role, approved)
+select u.id,
+       coalesce(u.raw_user_meta_data->>'display_name', ''),
+       case when lower(coalesce(u.email, '')) = 'lawsonhughes53@gmail.com' then 'manager' else 'employee' end,
+       lower(coalesce(u.email, '')) = 'lawsonhughes53@gmail.com'
+from auth.users u
+on conflict (user_id) do update
+set role = case
+      when exists (
+        select 1 from auth.users owner_user
+        where owner_user.id = employee_profiles.user_id
+          and lower(coalesce(owner_user.email, '')) = 'lawsonhughes53@gmail.com'
+      ) then 'manager'
+      else employee_profiles.role
+    end,
+    approved = case
+      when exists (
+        select 1 from auth.users owner_user
+        where owner_user.id = employee_profiles.user_id
+          and lower(coalesce(owner_user.email, '')) = 'lawsonhughes53@gmail.com'
+      ) then true
+      else employee_profiles.approved
+    end;
+
 grant select, insert, update on public.employee_profiles to authenticated;
 grant select, insert, update on public.employee_tasks to authenticated;
