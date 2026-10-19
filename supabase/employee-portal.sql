@@ -89,6 +89,12 @@ create policy "profile insert own pending" on public.employee_profiles
 for insert to authenticated
 with check (user_id = auth.uid() and role = 'employee' and approved = false);
 
+drop policy if exists "manager update profiles" on public.employee_profiles;
+create policy "manager update profiles" on public.employee_profiles
+for update to authenticated
+using (public.is_approved_manager())
+with check (public.is_approved_manager());
+
 drop policy if exists "profile update own pending" on public.employee_profiles;
 create policy "profile update own pending" on public.employee_profiles
 for update to authenticated
